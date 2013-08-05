@@ -1,5 +1,5 @@
 name    'ptomulik-bdsportconfig'
-version '0.1.0'
+version '0.1.1'
 source 'git://git@github.com/ptomulik/puppet-bsdportconfig.git'
 author 'ptomulik'
 license 'Apache License, Version 2.0'
