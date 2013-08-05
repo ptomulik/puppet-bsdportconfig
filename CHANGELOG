@@ -1,2 +1,4 @@
-2013-07-05 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+2013-07-05 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * fixed unit test to expect correct exception types
+2013-07-05 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * initial implementation, ver. 0.1.0
