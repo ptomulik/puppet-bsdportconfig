@@ -1,4 +1,5 @@
 2013-07-06 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.1.3
   * fixed lib/puppet/provider/bsdportconfig/ports.rb - delete_if was used as a
     global function
 2013-07-06 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
