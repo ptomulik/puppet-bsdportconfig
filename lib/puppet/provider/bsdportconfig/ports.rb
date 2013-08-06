@@ -103,7 +103,7 @@ Puppet::Type.type(:bsdportconfig).provide(:ports) do
       "#{usr_ops.class} provieded." if not usr_ops.is_a? Hash
     unless usr_ops.all? {|k,v| cur_ops.has_key? k}
       inv_ops = usr_ops.clone
-      inv_ops = delete_if {|k,v| cur_ops.has_key? k}
+      inv_ops.delete_if {|k,v| cur_ops.has_key? k}
       inv_ops = inv_ops.keys.join(", ")
       pkg = make_package_name
       fail ArgumentError, "Invalid option(s) #{inv_ops} for package '#{pkg}'"
