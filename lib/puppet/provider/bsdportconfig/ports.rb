@@ -66,11 +66,9 @@ Puppet::Type.type(:bsdportconfig).provide(:ports) do
     return dir
   end
 
-  # run "make -f path/to/port/Makefile target"
+  # run "make -C path/to/port target"
   def run_make(target)
-    dir = pkgportdir
-    cmd = "cd #{dir} && #{command(:make)} #{target}"
-    out = execute(cmd)
+    make '-C', pkgportdir, target
   end
 
   # call "make package-name" in the port's directory and extract full name
@@ -99,8 +97,8 @@ Puppet::Type.type(:bsdportconfig).provide(:ports) do
   def validate_options
     cur_ops = make_showconfig
     usr_ops = @resource[:options]
-    raise Puppet::Error, "The options parameter must be a Hash. " + \
-      "#{usr_ops.class} provieded." if not usr_ops.is_a? Hash
+    raise Puppet::Error, "The options parameter must be a Hash, not " + \
+      "#{usr_ops.class}." if not usr_ops.is_a? Hash
     unless usr_ops.all? {|k,v| cur_ops.has_key? k}
       inv_ops = usr_ops.clone
       inv_ops.delete_if {|k,v| cur_ops.has_key? k}

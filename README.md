@@ -26,10 +26,9 @@ build options are set (or unset) for a given BSD port.
 The **bsdportconfig** module helps to configure BSD ports.
 
 Installation and de-installation of FreeBSD ports is handled quite well by
-`package` resource provided by core **puppet**. However, it provides no way to
-set configuration options for ports (no `"make config"` stage), and all
-installs packages with their default configurations (or with manually pre-set
-options).
+`package` resource from **puppet**'s core. However, it has no way to
+set configuration options for ports (no `make config` stage), and installs
+packages with their default options (or with manually pre-set options).
 
 This module tries to fill this gap. It helps to ensure, that certain
 configuration options are set (or unset) for certain ports. You may chain the
@@ -105,7 +104,8 @@ Directory where the result of configuring options are stored. Defaults to
 
 ##Limitations
 
-Currently tested on FreeBSD only. No tests for the provider yet.
+Currently tested on FreeBSD only (NetBSD, OpenBSD haven't been tried - any
+feedback welcome). No tests for the provider yet.
 
 ##Development
 

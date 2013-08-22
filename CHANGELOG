@@ -1,3 +1,5 @@
+2013-08-22 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * small corrections to ports.rb and README.md
 2013-07-06 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.3
   * fixed lib/puppet/provider/bsdportconfig/ports.rb - delete_if was used as a
