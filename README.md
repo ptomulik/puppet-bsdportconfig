@@ -1,10 +1,10 @@
-#bsdportconfig
+# bsdportconfig
 
 Configure build options for FreeBSD ports.
 
 Source code is available at: [https://github.com/ptomulik/puppet-bsdportconfig](https://github.com/ptomulik/puppet-bsdportconfig)
 
-####Table of Contents
+#### Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description](#module-description)
@@ -16,19 +16,20 @@ Source code is available at: [https://github.com/ptomulik/puppet-bsdportconfig](
 5. [Limitations](#limitations)
 6. [Development](#development)
 
-##Overview
+## Overview
 
-This module provides a **bsdportconfig** resource which ensures that certain
-build options are set (or unset) for a given BSD port.
+This module implements a **bsdportconfig** resource to ensure that certain
+build options are set (or unset) for a BSD port.
 
-##Module Description
+## Module Description
 
 The **bsdportconfig** module helps to configure BSD ports.
 
 Installation and de-installation of FreeBSD ports is handled quite well by
 `package` resource from **puppet**'s core. However, it has no way to
-set configuration options for ports (no `make config` stage), and installs
-packages with their default options (or with manually pre-set options).
+set configuration options for ports (no `make config` stage), and always
+installs packages with their default options (or with manually pre-set
+options).
 
 This module tries to fill this gap. It helps to ensure, that certain
 configuration options are set (or unset) for certain ports. You may chain the
@@ -37,20 +38,20 @@ of ports before they get installed.
 
 The module supports only the **on/off** options.
 
-##Setup
+## Setup
 
-###What Bsdportconfig affects
+### What Bsdportconfig affects
 
 This module affects:
 
 * config options for given ports, it's done by modifying options files
   `$port_dbdir/*/options`, where `$port_dbdir='/var/db/ports'` by default.
 
-###Setup Requirements
+### Setup Requirements
 
 You may need to enable **pluginsync** in your *puppet.conf*.
 	
-###Beginning with Bsdportconfig	
+### Beginning with Bsdportconfig	
 
 **Note**: the resource modifies only the options listed in `options`
 parameter. Other options are left unaltered (even if they currently differ from
@@ -71,43 +72,43 @@ modules:
     bsdportconfig {'www/apache22': options => { 'SUEXEC'=>on } }
     package { 'www/apache22': require => Bsdportconfig['www/apache22'] }
 
-##Usage
+## Usage
 
-###Resource type: `bsdportconfig`
+### Resource type: `bsdportconfig`
 
-####Parameters within `bsdportconfig`:
+#### Parameters within `bsdportconfig`:
 
-#####`ensure` (optional)
+##### `ensure` (optional)
 
 Ensure that port configuration is synchronized with the resource. Accepts
 value: `insync`. Defaults to `insync`. 
 
-#####`name` (required)
+##### `name` (required)
 
 The package name. It has the same meaning and syntax as the `$name` parameter
 to the **package** resource from core puppet (for the **ports** provider).
 
-#####`options` (optional)
+##### `options` (optional)
 
 Options for the package. This is a hash with keys being option names
 (uppercase) and values being `'on'`/`'off`' strings. Defaults to empty hash.
 
-#####`portsdir` (optional)
+##### `portsdir` (optional)
 
 Location of the ports tree (absolute path). Defaults to */usr/ports* on FreeBSD
 and OpenBSD, and to */usr/pkgsrc* on NetBSD. 
 
-#####`port_dbdir` (optional)
+##### `port_dbdir` (optional)
 
 Directory where the result of configuring options are stored. Defaults to
 */var/db/ports*.
 
-##Limitations
+## Limitations
 
 Currently tested on FreeBSD only (NetBSD, OpenBSD haven't been tried - any
 feedback welcome). No tests for the provider yet.
 
-##Development
+## Development
 
 Project is held on GitHub:
 
