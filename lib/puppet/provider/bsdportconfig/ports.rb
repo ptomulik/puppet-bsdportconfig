@@ -43,10 +43,66 @@ Puppet::Type.type(:bsdportconfig).provide(:ports) do
     File.open("#{dir}/options",'w') { |f| f.write(content) }
   end
 
+  def parse_records(string)
+    begin
+      paragraphs = string.split(/\n\n+/) 
+    rescue ArgumentError => err
+      # try handle non-ascii descriptions (see 'fr-belote' package i.e.) 
+      raise err unless err.message =~ /invalid byte sequence/
+      inenc = 'UTF-8' # assumed ad-hoc
+      string.encode!('ASCII', inenc, {:invalid=>:replace, :undef=>:replace})
+      paragraphs = string.split(/\n\n+/) 
+    end
+
+    fn_re = /[A-Za-z0-9_-]+/ # field name
+    fv_re = /\S?.*\S/ # field value
+    re = /^\s*(#{fn_re})\s*:\s*(#{fv_re})\s*$/
+
+    records = paragraphs.reject { |para| 
+      para.match(/^Moved:/) or (not para.match(/^Path:/)) or 
+      (not para.match(/^Port:/))
+    }.map { |para| 
+      para.scan(re)
+    }.map { |pairs| 
+      Hash[pairs]
+    }
+
+    hash = {}
+    records.each do |record|
+      parts = record['Port'].split('-')
+      package = parts.size >= 2 ? parts[0..-2].join('-') : parts[0]
+      version = parts.size >= 2 ? parts.last : nil
+      # if we're unable to extract version, nil will be used
+      hash[package] ||= {}
+      record.merge!({'Version' => version, 'Package' => package})
+      hash[package][version] = record
+    end
+    hash
+  end
+
   def pkgportdir
     portsdir = @resource[:portsdir]
     name = @resource[:name]
-    dir = "#{portsdir}/#{name}"
+    # support both forms: origin/package and package 
+    if name.match(/\//)
+      dir = "#{portsdir}/#{name}"
+    else
+      # find out port's path
+      versuffix = '-[A-Za-z0-9][A-Za-z0-9\\.,_]*'
+      string = make '-C', portsdir, 'search', "name=^#{name}#{versuffix}$"
+      records = parse_records(string)
+      records = records[name]
+      if records.nil?
+        raise Puppet::Error, "Could not find the #{name} port."
+      end
+      unless records.length == 1
+        # IMHO this should never happen, but who knows the ports ...
+        # for example, it may happen, that we find two packages having same 
+        # name, but different origins (foo/geez and bar/geez),
+        raise Puppet::Error, "Found #{records.lengts} versions of #{name}."
+      end
+      dir = records.first[1]['Path']
+    end
     if not File.exists?(dir) 
       raise Puppet::Error, "Port directory #{dir}/ does not exist. " + \
         "Check your ports installation."

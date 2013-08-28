@@ -1,8 +1,8 @@
 # bsdportconfig
 
-Configure build options for FreeBSD ports.
+[![Build Status](https://travis-ci.org/ptomulik/puppet-bsdportconfig.png?branch=master)](https://travis-ci.org/ptomulik/puppet-bsdportconfig)
 
-Source code is available at: [https://github.com/ptomulik/puppet-bsdportconfig](https://github.com/ptomulik/puppet-bsdportconfig)
+Configure build options for FreeBSD ports.
 
 #### Table of Contents
 
@@ -61,16 +61,22 @@ their default values defined by port's Makefile).
 **Example**: ensure that `www/apache22` is configured with `SUEXEC` and `CGID`
 modules:
 
-    bsdportconfig {'www/apache22': options => { 'SUEXEC'=>on, 'CGID'=>on } }
+    bsdportconfig { 'www/apache22': options => { 'SUEXEC'=>on, 'CGID'=>on } }
 
 **Example**: ensure that `www/apache22` is configured without `CGID` module:
 
-    bsdportconfig {'www/apache22': options => { 'CGID'=>off } }
+    bsdportconfig { 'www/apache22': options => { 'CGID'=>off } }
 
 **Example**: install `www/apache22` package with `SUEXEC` module enabled:
 
-    bsdportconfig {'www/apache22': options => { 'SUEXEC'=>on } }
+    bsdportconfig { 'www/apache22': options => { 'SUEXEC'=>on } }
     package { 'www/apache22': require => Bsdportconfig['www/apache22'] }
+
+**Example**: since version 0.1.6 you may use plain package name:
+
+    bsdportconfig { 'apache22': options => {'SUEXEC'=>on} }
+
+In this case the *bsdportconfig* will try to determinr port's path automatically.
 
 ## Usage
 
