@@ -1,4 +1,5 @@
 2013-08-30 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.2.0
   * module totally revamped:
     - reimplemented bsdportconfig to be prefetch/flush resource
     - most details are shifted to a new Puppet::Util::Bsdportconfig module,
