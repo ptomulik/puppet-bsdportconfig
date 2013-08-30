@@ -1,82 +1,103 @@
+dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
+$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
+
+require 'puppet/util/bsdportconfig'
+
 module Puppet
   newtype(:bsdportconfig) do
-    @doc = 'Ensures that certain build options are set (or unset) for a given
-    BSD port.'
+    @doc = <<-DOC
+Set build options for BSD ports.
 
-    newproperty(:ensure) do
-      desc 'Ensure that port configuration is synchronized with options.
-      Accepts values: insync. Defaults to \'insync\'.'
+TERMINOLOGY
 
-      defaultto :insync
+We use the following terminology when referring ports/packages:
 
-      newvalue(:insync) do
-        provider.apply_options
-      end
+- a string in form 'apache22' or 'ruby' is referred to as package
+  name (or package in short)
+- a string in form 'apache22-2.2.25' or 'ruby-1.8.7.371,1'
+  is referred to as a port name (or port in short)
+- a string in form 'www/apache22' or 'lang/ruby18' is referred to as a
+  port origin (or origin in short)
 
-      def retrieve
-        provider.altered_options.empty? ? :insync : :outofsync
-      end
-    end
+Package origins are used as primary identifiers for bsdportconfig
+instances. It's recommended to use package origins or port names to
+identify ports.
 
+AMBIGUITY OF PACKAGE NAMES
+
+Accepting package names (e.g. apache22) as the name parameter was
+introduced for convenience in 0.2.0. However, package names in this form
+are ambiguous, meaning that port search may find multiple ports matching
+the given package name. For example 'ruby' package has three ports at the
+time of this writing  (2013-08-30): ruby-1.8.7.371,1, ruby-1.9.3.448,1, and
+ruby-2.0.0.195_1,1 with origins lang/ruby18, lang/ruby19 and lang/ruby20
+respectively. If you pass a package name which is ambiguous, transaction
+will fail with message such as:
+
+    Error: Could not prefetch bsdportconfig provider 'ports': found 3 ports with name 'ruby': 'lang/ruby18', 'lang/ruby19', 'lang/ruby20'
+DOC
     newparam(:name) do
-      desc 'The package name. It has the same meaning as the $name parameter to
-      the package resource from core puppet.'
+
+      desc "Reference to a port. A package name, port name or origin may be
+      passed as the `name` parameter (see TERMINOLOGY in resource description).
+      If the name has form 'category/subdir' it is treated as an origin.
+      Otherwise, the provider tries to find matching port by port name and if
+      it fails, by package name. Note, that package names are ambiguous, see
+      AMBIGUITY OF PACKAGE NAMES in the resource description."
+
+      validate do |name|
+        regexps = [ /^#{Puppet::Util::Bsdportconfig::ORIGIN_RE}$/,
+                    /^#{Puppet::Util::Bsdportconfig::PORT_RE}$/,
+                    /^#{Puppet::Util::Bsdportconfig::PACKAGE_RE}$/ ]
+        unless regexps.any? {|re| name =~ re }
+          fail ArgumentError, "#{name.inspect} is ill-formed (for $name)"
+        end
+      end
     end
 
-    newparam(:options) do
-      desc 'Options for the package. This is a hash with keys being option
-      names and values being on/off strings'
+    newproperty(:options) do
+
+      desc "Options for the package. This is a hash with keys being option
+      names and values being 'on'/'off' strings"
+
       defaultto Hash.new
       validate do |opts|
         unless opts.is_a? Hash
-          fail ArgumentError, "The 'options' parameter must be a hash." + \
-            "Got an instance of #{ops.class} class."
+          fail ArgumentError, "#{opts.inspect} is not a hash (for $options)"
         end
         opts.each do |k, v|
-          unless v.is_a? String
-            fail ArgumentError, "Invalid value type #{v.class} for option #{k}"
+          unless v.is_a?(String) 
+            fail ArgumentError, "#{v.inspect} is not a string (for $options['#{k}'])"
           end
           unless v =~ /^(on|off)$/
-            fail ArgumentError, "Invalid value #{v} for option #{k}"
+            fail ArgumentError, "#{v.inspect} is not allowed (for $options['#{k}'])"
           end
         end
       end
-    end
 
-    newparam(:portsdir) do
-      desc 'Location of the ports tree. This is /usr/ports on FreeBSD and
-      OpenBSD, and /usr/pkgsrc on NetBSD.'
-      validate do |value|
-        unless Puppet::Util.absolute_path?(value)
-          fail ArgumentError, "The portsdir parameter must be an absolute path.
-          not #{value}"
-        end
+      def insync?(is)
+        return false unless should.is_a?(Hash) and is.is_a?(Hash)
+        is.select {|k,v| should.keys.include? k} == should
       end
 
-      defaultto do
-        case Facter.value(:operatingsystem)
-        when /FreeBSD/, /OpenBSD/
-          '/usr/ports'
-        when /NetBSD/
-          '/usr/pkgsrc'
+      def should_to_s(newvalue)
+        if newvalue.is_a?(Hash)
+          s = Hash[newvalue.sort].inspect
         else
-          nil
+          s = newvalue.inspect
         end
-      end
-    end
-
-    newparam(:port_dbdir) do
-      desc 'Directory where the result of configuring options are stored.
-      Defaults to /var/db/ports.'
-
-      validate do |value|
-        unless Puppet::Util.absolute_path?(value)
-          fail ArgumentError, "The port_dbdir parameter must be an absolute path.
-          not #{value}"
-        end
+        s
       end
 
-      defaultto '/var/db/ports'
+      def is_to_s(currentvalue)
+        if currentvalue.is_a?(Hash)
+          s = Hash[currentvalue.select{|k,v| should.keys.include? k}.sort].inspect 
+        else
+          s = currentvalue.inspect
+        end
+        s
+      end
+
     end
 
   end

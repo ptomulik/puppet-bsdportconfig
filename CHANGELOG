@@ -1,3 +1,17 @@
+2013-08-30 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * module totally revamped:
+    - reimplemented bsdportconfig to be prefetch/flush resource
+    - most details are shifted to a new Puppet::Util::Bsdportconfig module,
+    - removed $portsdir and $port_dbdir params, these are class attributes now,
+    - the resource is no longer ensurable, the $ensure property was removed,
+    - make -V is used internally to retrieve resource parameters,
+    - make showconfig is no longer used to read current options,
+    - current options are retrieved only from the options files,
+    - options are written to "options.local" instead of "options",
+    - options not listed by user in '$options' are not written to a file,
+    - optimizations are added to reduce number of calls to external commands,
+    - added validation of the $name parameter
+    - unit tests adapted to new implementation
 2013-08-27 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.6
   * add support for plain package names (witohut origin)
