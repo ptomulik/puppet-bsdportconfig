@@ -1,4 +1,5 @@
 2013-08-31 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.2.1
   * several optimizations
     - when looking for all resource instances, first list all ports and then
       select only those for which options file(s) exist(s) - this is opose to
