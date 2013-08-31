@@ -14,7 +14,7 @@ Puppet::Type.type(:bsdportconfig).provide :ports do
     require 'puppet/util/bsdportconfig'
     include Puppet::Util::Bsdportconfig
 
-    PROPERTY_HASH_GETTERS = [:options_file, :origin, :package, :port, :portdir]
+    PROPERTY_HASH_GETTERS = [:options_file, :origin, :package, :port] 
 
     def mk_property_hash_getters
       PROPERTY_HASH_GETTERS.each do |key|
@@ -44,12 +44,12 @@ Puppet::Type.type(:bsdportconfig).provide :ports do
     end
 
     def instances
-      records = search_dbdir_for_records(port_dbdir, portsdir)
-      records.map{|key,rec| new(build_property_hash(rec)) }
+      hashes = prefetch_property_hashes_with_options(portsdir, port_dbdir)
+      hashes.map{|key,hash| new(hash) }
     end
 
     def prefetch(resources)
-      hashes = prefetch_property_hashes(resources.keys, portsdir)
+      hashes = prefetch_property_hashes(resources.keys, portsdir, port_dbdir)
       hashes.each do |key, hash|
         resources[key].provider = new(hash)
       end

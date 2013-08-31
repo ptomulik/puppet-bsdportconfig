@@ -1,3 +1,12 @@
+2013-08-31 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * several optimizations
+    - when looking for all resource instances, first list all ports and then
+      select only those for which options file(s) exist(s) - this is opose to
+      what we had previously (scanning options files first); this eliminates
+      the need for double scanning of options files, cumbersome port searches
+      and querying for make variables,
+    - querying for make variables (such as OPTIONS_FILE) is no longer
+      performed; this information is now obtained by other means
 2013-08-30 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.2.0
   * module totally revamped:

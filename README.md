@@ -152,9 +152,6 @@ These are limitation I see at the moment:
     algorithm used to read files resembles what was seen in ports' Makefiles,
     but it was also seen, that the algorithm used by ports is going to be
     changed (so we may desync at some point)
-  * it still has quite poor performance when enumerating instances with `puppet
-    resoruce bsdconfig`; it takes a while to scan options for all ports that
-    arleady have defined them (about 6s for 30 packages for example),
 
 ## Development
 
