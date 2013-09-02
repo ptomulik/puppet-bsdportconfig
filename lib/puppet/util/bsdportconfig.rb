@@ -1,9 +1,8 @@
 module Puppet::Util::Bsdportconfig
-
-  PACKAGE_RE      = /[a-zA-Z0-9][\w\.+-]*/
-  VERSION_RE      = /[A-Za-z0-9][\w\.,]*/
-  PORT_RE         = /#{PACKAGE_RE}-#{VERSION_RE}/
-  ORIGIN_RE       = /#{PACKAGE_RE}\/#{PACKAGE_RE}/
+  PORTNAME_RE     = /[a-zA-Z0-9][\w\.+-]*/
+  PORTVERSION_RE  = /[A-Za-z0-9][\w\.,]*/
+  PKGNAME_RE      = /#{PORTNAME_RE}-#{PORTVERSION_RE}/
+  PORTORIGIN_RE   = /#{PORTNAME_RE}\/#{PORTNAME_RE}/
   VERSION_PATTERN = '[A-Za-z0-9][A-Za-z0-9\\.,_]*'
   ONOFF_OPTION_RE = /^\s*OPTIONS_FILE_((?:UN)?SET)\s*\+=(\w+)\s*$/
 
@@ -21,23 +20,23 @@ module Puppet::Util::Bsdportconfig
     end
   end
 
-  def ports_to_pattern(ports)
-    "^#{pkgstuff_to_pattern(ports)}$"
+  def pkgnames_to_pattern(pkgnames)
+    "^#{pkgstuff_to_pattern(pkgnames)}$"
   end
 
-  def packages_to_pattern(packages)
-    "^#{pkgstuff_to_pattern(packages)}-#{VERSION_PATTERN}$"
+  def portnames_to_pattern(portnames)
+    "^#{pkgstuff_to_pattern(portnames)}-#{VERSION_PATTERN}$"
   end
 
   def origins_to_pattern(portsdir, origins)
     "^#{portsdir}/#{pkgstuff_to_pattern(origins)}$"
   end
 
-  def split_port(port)
-    parts = port.split('-')
-    package = parts.size >= 2 ? parts[0..-2].join('-') : parts.first
+  def split_pkgname(pkgname)
+    parts = pkgname.split('-')
+    portname = parts.size >= 2 ? parts[0..-2].join('-') : parts.first
     version = parts.size >= 2 ? parts.last : nil
-    [package, version]
+    [portname, version]
   end
 
   def read_options_file(file)
@@ -69,11 +68,12 @@ module Puppet::Util::Bsdportconfig
 
     array = []
     records.each do |record|
-      package, version = split_port(record[:port])
+      record[:pkgname] = record.delete(:port)
+      portname, version = split_pkgname(record[:pkgname])
       path = record[:path]
       # origin is same as the tail of port's path (verified on 24360 ports)
       origin = path.split(/\/+/).slice(-2..-1).join('/')
-      record.merge!({:version=>version, :package=>package, :origin=>origin})
+      record.merge!({:version=>version, :portname=>portname, :origin=>origin})
       array << record
     end
     array
@@ -86,7 +86,7 @@ module Puppet::Util::Bsdportconfig
     array.each do |record|
       options_files = [ 
         # keep these in proper order ...
-        record[:package],               # OPTIONSFILE
+        record[:portname],              # OPTIONSFILE
         record[:origin].gsub(/\//,'_'), # OPTIONS_FILE
       ].flat_map{|x|
         f = File.join(port_dbdir,x,"options")
@@ -106,26 +106,29 @@ module Puppet::Util::Bsdportconfig
     array
   end
 
-  def search_ports_by_port(ports, portsdir, port_dbdir)
-    ports = [ports] unless ports.is_a?(Enumerable)
-    array = ports.each_slice(20).flat_map {|pslice|
+  def search_ports_by_pkgname(pkgnames, portsdir, port_dbdir)
+    pkgnames = [pkgnames] unless pkgnames.is_a?(Enumerable)
+    return {} if pkgnames.empty?
+    array = pkgnames.each_slice(20).flat_map {|pslice|
       # query in chunks to keep command-line of reasonable length
-      search_ports('name', ports_to_pattern(pslice), portsdir, port_dbdir)
+      search_ports('name', pkgnames_to_pattern(pslice), portsdir, port_dbdir)
     }
-    search_result_to_hash(array, :port)
+    search_result_to_hash(array, :pkgname)
   end
 
-  def search_ports_by_package(packages, portsdir, port_dbdir)
-    packages = [packages] unless packages.is_a?(Enumerable)
-    array = packages.each_slice(20).flat_map {|pslice|
+  def search_ports_by_portname(portnames, portsdir, port_dbdir)
+    portnames = [portnames] unless portnames.is_a?(Enumerable)
+    return {} if portnames.empty?
+    array = portnames.each_slice(20).flat_map {|pslice|
       # query in chunks to keep command-line of reasonable length
-      search_ports('name', packages_to_pattern(pslice), portsdir, port_dbdir)
+      search_ports('name', portnames_to_pattern(pslice), portsdir, port_dbdir)
     }
-    search_result_to_hash(array, :package)
+    search_result_to_hash(array, :portname)
   end
 
   def search_ports_by_origin(origins, portsdir, port_dbdir)
     origins = [origins] unless origins.is_a?(Enumerable)
+    return {} if origins.empty?
     array = origins.each_slice(20).flat_map {|pslice|
       # query in chunks to keep command-line of reasonable length
       search_ports('path', origins_to_pattern(portsdir, pslice), portsdir, port_dbdir)
@@ -154,7 +157,7 @@ module Puppet::Util::Bsdportconfig
     { 
       :provider     => name, 
       :name         => record[:origin], 
-      :port         => record[:port], 
+      :pkgname      => record[:pkgname], 
       :options      => record[:options],
       :options_file => record[:options_file],
       :origin       => record[:origin],
@@ -165,22 +168,22 @@ module Puppet::Util::Bsdportconfig
   def prefetch_property_hashes(names, portsdir, port_dbdir)
     names = [names] unless names.is_a?(Array)
 
-    origins = names.select{|name| name=~/^#{ORIGIN_RE}$/}
-    ports_or_packages = names - origins
+    origins = names.select{|name| name=~/^#{PORTORIGIN_RE}$/}
+    pkgnames_or_portnames = names - origins
 
     records_by_origin = search_ports_by_origin(origins, portsdir, port_dbdir)
     origins -= records_by_origin.keys
 
-    records_by_port = search_ports_by_port(ports_or_packages, portsdir, port_dbdir)
-    ports_or_packages -= records_by_port.keys 
+    records_by_pkgname = search_ports_by_pkgname(pkgnames_or_portnames, portsdir, port_dbdir)
+    pkgnames_or_portnames -= records_by_pkgname.keys 
 
-    records_by_package = search_ports_by_package(ports_or_packages, portsdir, port_dbdir)
-    ports_or_packages -= records_by_package.keys
+    records_by_portname = search_ports_by_portname(pkgnames_or_portnames, portsdir, port_dbdir)
+    pkgnames_or_portnames -= records_by_portname.keys
 
-    array = records_by_package.to_a + records_by_port.to_a + records_by_origin.to_a
+    array = records_by_portname.to_a + records_by_pkgname.to_a + records_by_origin.to_a
 
     errors = []
-    missing = origins + ports_or_packages # what's left was not found
+    missing = origins + pkgnames_or_portnames # what's left was not found
     unless missing.empty?
       list = missing.map{|m| "'#{m}'"}.join(', ')
       errors << "the following packages could not be found: #{list}"
@@ -208,9 +211,10 @@ module Puppet::Util::Bsdportconfig
     }]
   end
 
-  def save_options(file, options, port)
+  def save_options(file, options, pkgname)
+    debug "Saving options for '#{pkgname}' port to file '#{file}'"
     content = "# This file is auto-generated by puppet\n"
-    content = "# Options for #{port}\n"
+    content = "# Options for #{pkgname}\n"
     options.each do |k,v|
       if v =~ /^on$/i
         content += "OPTIONS_FILE_SET+=#{k}\n"
@@ -234,5 +238,4 @@ module Puppet::Util::Bsdportconfig
     end
     File.open(file,'w') {|f| f.write(content) }
   end
-
 end

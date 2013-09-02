@@ -4,6 +4,7 @@
 
 Configure build options for FreeBSD ports.
 
+**Note**: terminology corrected in 0.2.2
 **Note**: significant changes were introduced in 0.2.0 (the module was actually
 reimplemented, see CHANGELOG).
 
@@ -96,26 +97,27 @@ Set build options for BSD ports.
 
 We use the following terminology when referring ports/packages:
 
-  * a string in form `'apache22'` or `'ruby'` is referred to as *package* name
-    (or package in short)
+  * a string in form `'apache22'` or `'ruby'` is referred to as *portname* 
   * a string in form `'apache22-2.2.25'` or `'ruby-1.8.7.371,1'` is referred to
-    as a *port* name (or port in short)
+    as a *pkgname* 
   * a string in form `'www/apache22'` or `'lang/ruby18'` is referred to as a
-    port *origin* (or origin in short)
+    port *origin* 
+
+See [http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html](http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html)
 
 Package origins are used as primary identifiers for bsdportconfig instances.
 It's recommended to use package origins or port names to identify ports.
 
-#### AMBIGUITY OF PACKAGE NAMES
+#### AMBIGUITY OF PORTNAMES
 
-Accepting package names (e.g. `apache22`) as the [name](#name-required)
-parameter was introduced for convenience in 0.2.0. However, package names in
+Accepting *portnames* (e.g. `apache22`) as the [name](#name-required)
+parameter was introduced for convenience in 0.2.0. However, *portnames* in
 this form are ambiguous, meaning that port search may find multiple ports 
-matching the given package name. For example `'ruby'` package has three ports
+matching the given *portname*. For example `'ruby'` package has three ports
 at the time of this writing  (2013-08-30): `ruby-1.8.7.371,1`,
 `ruby-1.9.3.448,1`, and `ruby-2.0.0.195_1,1` with origins `lang/ruby18`,
-`lang/ruby19` and `lang/ruby20` respectively. If you pass a package name which
-is ambiguous, transaction will fail with message such as:
+`lang/ruby19` and `lang/ruby20` respectively. If you pass a portname which
+matches multiple ports, transaction will fail with a message such as:
 
     Error: Could not prefetch bsdportconfig provider 'ports': found 3 ports with name 'ruby': 'lang/ruby18', 'lang/ruby19', 'lang/ruby20'
 
@@ -123,12 +125,12 @@ is ambiguous, transaction will fail with message such as:
 
 ##### name (required)
 
-Reference to a port. A *package* name, *port* name or *origin* may be passed as
+Reference to a port. A *portname*, *pkgname* name or *origin* may be passed as
 the `name` parameter (see [TERMINOLOGY](#terminology) in resource description).
-If the name has form 'category/subdir' it is treated as an origin. Otherwise,
-the provider tries to find matching port by port name and if it fails, by
-package name. Note, that package names are ambiguous, see [AMBIGUITY OF PACKAGE
-NAMES](#ambiguity-of-package-names) in the resource description.
+If the name has form 'category/subdir' it is treated as an *origin*. Otherwise,
+the provider tries to find matching port by *pkgname* and if it fails, by
+*portname*. Note, that *portname*s are ambiguous, see [AMBIGUITY OF
+PORTNAMES](#ambiguity-of-portnames) in the resource description.
 
 
 ##### options (optional)
