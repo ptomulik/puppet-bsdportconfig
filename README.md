@@ -62,7 +62,7 @@ You may need to enable **pluginsync** in your *puppet.conf*.
 ### Beginning with Bsdportconfig	
 
 **Note**: the resource writes to file only the options listed in `options`
-parameter. Other options are left unaltered.
+parameter. Other options do are not written to options files.
 
 **Example**: ensure that `www/apache22` is configured with `SUEXEC` and `CGID`
 modules:
@@ -78,11 +78,11 @@ modules:
     bsdportconfig { 'www/apache22': options => { 'SUEXEC'=>on } }
     package { 'www/apache22': require => Bsdportconfig['www/apache22'] }
 
-**Example**: since version 0.1.6 you may use plain package name:
+**Example**: since version 0.1.6 you may use *portnames* to identify ports:
 
     bsdportconfig { 'apache22': options => {'SUEXEC'=>on} }
 
-**Example**: since version 0.2.0 full port names are also supported:
+**Example**: since version 0.2.0 *pkgnames* are also supported:
 
     bsdportconfig { 'apache22-2.2.25': options => {'SUEXEC'=>on} }
 
@@ -105,8 +105,8 @@ We use the following terminology when referring ports/packages:
 
 See [http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html](http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html)
 
-Package origins are used as primary identifiers for bsdportconfig instances.
-It's recommended to use package origins or port names to identify ports.
+Port *origins* are used as primary identifiers for bsdportconfig instances.
+It's recommended to use *origins* or *pkgnames* to identify ports.
 
 #### AMBIGUITY OF PORTNAMES
 
