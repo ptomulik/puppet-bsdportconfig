@@ -1,4 +1,7 @@
 2013-09-01 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.2.3
+  * corrections to documentation
+2013-09-01 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.2.2
   * handle empty array arguments in search_ports_by_xxx()
   * corrected terminology in docs
