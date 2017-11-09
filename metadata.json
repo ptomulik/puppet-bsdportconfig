@@ -1,6 +1,6 @@
 {
   "name": "ptomulik-bsdportconfig",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "author": "ptomulik",
   "summary": "Configure build options for FreeBSD ports",
   "license": "Apache-2.0",

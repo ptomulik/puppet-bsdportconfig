@@ -1,9 +1,10 @@
-2017-11-09 Kim Jahn (mookie-)
-  * [PR #2] Puppet.newtype is deprecated since puppet 4 - use Puppet::Type.newtype instead
 2017-11-09 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.2.4
   * warn in README.md that bsdportconfig is not actively developed
   * switch from Modulefile to metadata.json
   * updated testing machinery to work after these four years
+2017-11-09 Kim Jahn (mookie-)
+  * [PR #2] Puppet.newtype is deprecated since puppet 4 - use Puppet::Type.newtype instead
 2013-09-01 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.2.3
   * corrections to documentation
