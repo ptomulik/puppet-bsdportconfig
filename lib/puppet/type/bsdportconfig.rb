@@ -12,11 +12,11 @@ TERMINOLOGY
 
 We use the following terminology when referring ports/packages:
 
-  * a string in form `'apache22'` or `'ruby'` is referred to as *portname* 
+  * a string in form `'apache22'` or `'ruby'` is referred to as *portname*
   * a string in form `'apache22-2.2.25'` or `'ruby-1.8.7.371,1'` is referred to
-    as a *pkgname* 
+    as a *pkgname*
   * a string in form `'www/apache22'` or `'lang/ruby18'` is referred to as a
-    port *origin* 
+    port *origin*
 
 See http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html
 
@@ -27,7 +27,7 @@ AMBIGUITY OF PORTNAMES
 
 Accepting *portnames* (e.g. `apache22`) as the [name](#name-required)
 parameter was introduced for convenience in 0.2.0. However, *portnames* in
-this form are ambiguous, meaning that port search may find multiple ports 
+this form are ambiguous, meaning that port search may find multiple ports
 matching the given *portname*. For example `'ruby'` package has three ports
 at the time of this writing  (2013-08-30): `ruby-1.8.7.371,1`,
 `ruby-1.9.3.448,1`, and `ruby-2.0.0.195_1,1` with origins `lang/ruby18`,
@@ -66,7 +66,7 @@ DOC
           fail ArgumentError, "#{opts.inspect} is not a hash (for $options)"
         end
         opts.each do |k, v|
-          unless v.is_a?(String) 
+          unless v.is_a?(String)
             fail ArgumentError, "#{v.inspect} is not a string (for $options['#{k}'])"
           end
           unless v =~ /^(on|off)$/
@@ -91,7 +91,7 @@ DOC
 
       def is_to_s(currentvalue)
         if currentvalue.is_a?(Hash)
-          s = Hash[currentvalue.select{|k,v| should.keys.include? k}.sort].inspect 
+          s = Hash[currentvalue.select{|k,v| should.keys.include? k}.sort].inspect
         else
           s = currentvalue.inspect
         end

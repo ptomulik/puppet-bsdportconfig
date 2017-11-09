@@ -14,7 +14,7 @@ Puppet::Type.type(:bsdportconfig).provide :ports do
     require 'puppet/util/bsdportconfig'
     include Puppet::Util::Bsdportconfig
 
-    PROPERTY_HASH_GETTERS = [:options_file, :origin, :package, :pkgname] 
+    PROPERTY_HASH_GETTERS = [:options_file, :origin, :package, :pkgname]
 
     def mk_property_hash_getters
       PROPERTY_HASH_GETTERS.each do |key|

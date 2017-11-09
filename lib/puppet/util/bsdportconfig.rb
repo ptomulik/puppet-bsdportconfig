@@ -14,7 +14,7 @@ module Puppet::Util::Bsdportconfig
 
   def pkgstuff_to_pattern(arg)
     if arg.is_a?(Enumerable)
-      '(' + arg.map{|p| escape_pattern(p)}.join('|') + ')' 
+      '(' + arg.map{|p| escape_pattern(p)}.join('|') + ')'
     else
       escape_pattern(arg)
     end
@@ -84,7 +84,7 @@ module Puppet::Util::Bsdportconfig
     array = parse_package_records(output)
     # augment array with options
     array.each do |record|
-      options_files = [ 
+      options_files = [
         # keep these in proper order ...
         record[:portname],              # OPTIONSFILE
         record[:origin].gsub(/\//,'_'), # OPTIONS_FILE
@@ -94,7 +94,7 @@ module Puppet::Util::Bsdportconfig
       }
       options_file = options_files.last
       options = {}
-      options_files.each do|f| 
+      options_files.each do|f|
         if File.exists?(f) and File.readable?(f)
           options.merge!(read_options_file(f))
         end
@@ -154,10 +154,10 @@ module Puppet::Util::Bsdportconfig
   end
 
   def build_property_hash(record)
-    { 
-      :provider     => name, 
-      :name         => record[:origin], 
-      :pkgname      => record[:pkgname], 
+    {
+      :provider     => name,
+      :name         => record[:origin],
+      :pkgname      => record[:pkgname],
       :options      => record[:options],
       :options_file => record[:options_file],
       :origin       => record[:origin],
@@ -175,7 +175,7 @@ module Puppet::Util::Bsdportconfig
     origins -= records_by_origin.keys
 
     records_by_pkgname = search_ports_by_pkgname(pkgnames_or_portnames, portsdir, port_dbdir)
-    pkgnames_or_portnames -= records_by_pkgname.keys 
+    pkgnames_or_portnames -= records_by_pkgname.keys
 
     records_by_portname = search_ports_by_portname(pkgnames_or_portnames, portsdir, port_dbdir)
     pkgnames_or_portnames -= records_by_portname.keys
@@ -204,9 +204,9 @@ module Puppet::Util::Bsdportconfig
 
   def prefetch_property_hashes_with_options(portsdir, port_dbdir)
     array = search_ports('path', "^#{portsdir}", portsdir, port_dbdir)
-    Hash[array.reject{|record| 
+    Hash[array.reject{|record|
       record[:options].empty?
-    }.map{|record| 
+    }.map{|record|
       [record[:origin], build_property_hash(record)]
     }]
   end

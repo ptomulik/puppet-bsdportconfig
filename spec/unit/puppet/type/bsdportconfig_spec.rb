@@ -15,14 +15,14 @@ describe Puppet::Type.type(:bsdportconfig) do
     end
     it "should fail when $name is ill-formed" do
       msg = /"ill formed" is ill-formed \(for \$name\)/
-      lambda { 
-        Puppet::Type.type(:bsdportconfig).new(:name=>'ill formed', :options=>1) 
+      lambda {
+        Puppet::Type.type(:bsdportconfig).new(:name=>'ill formed', :options=>1)
       }.should( raise_error Puppet::Error, msg )
     end
     [1, 'a', false].each do |options|
       it "should fail when $options=>#{options.inspect}" do
         msg = /#{Regexp.escape(options.inspect)} is not a hash \(for \$options\)/
-        lambda { 
+        lambda {
           Puppet::Type.type(:bsdportconfig).new(:name=>'x', :options=>options)
         }.should( raise_error Puppet::Error, msg )
       end
@@ -31,8 +31,8 @@ describe Puppet::Type.type(:bsdportconfig) do
       it "should fail when $options=>{'A'=>#{v}}" do
         hash = {:name=>'x', :options=>{'A'=>v}}
         msg = /#{v.inspect} is not allowed \(for \$options\['A'\]\)/
-        lambda { 
-          Puppet::Type.type(:bsdportconfig).new(hash) 
+        lambda {
+          Puppet::Type.type(:bsdportconfig).new(hash)
         }.should( raise_error Puppet::Error, msg)
       end
     end
