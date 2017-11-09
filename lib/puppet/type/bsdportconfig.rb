@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
 require 'puppet/util/bsdportconfig'
 
 module Puppet
-  newtype(:bsdportconfig) do
+  Type.newtype(:bsdportconfig) do
     @doc = <<-DOC
 Set build options for BSD ports.
 
