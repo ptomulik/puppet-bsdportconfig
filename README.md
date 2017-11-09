@@ -4,9 +4,13 @@
 
 Configure build options for FreeBSD ports.
 
-**Note**: terminology corrected in 0.2.2
-**Note**: significant changes were introduced in 0.2.0 (the module was actually
-reimplemented, see CHANGELOG).
+### Warning
+
+*Bsdportconfig* was not developed for last few years and may not work with
+recent FreeBSD releases. I'm not going to develop it further, as there
+is [ptomulik/portsng](https://forge.puppet.com/ptomulik/portsng),
+which handles build options, ports maintenance (install/uninstall/update)
+and is a mature and tested module.
 
 #### Table of Contents
 
