@@ -1,4 +1,5 @@
 2017-11-09 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * switch from Modulefile to metadata.json
   * updated testing machinery to work after these four years
 2013-09-01 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.2.3
