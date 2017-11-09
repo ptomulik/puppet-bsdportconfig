@@ -58,8 +58,8 @@ This module affects:
 ### Setup Requirements
 
 You may need to enable **pluginsync** in your *puppet.conf*.
-	
-### Beginning with Bsdportconfig	
+
+### Beginning with Bsdportconfig
 
 **Note**: the resource writes to file only the options listed in `options`
 parameter. Other options do are not written to options files.
@@ -97,11 +97,11 @@ Set build options for BSD ports.
 
 We use the following terminology when referring ports/packages:
 
-  * a string in form `'apache22'` or `'ruby'` is referred to as *portname* 
+  * a string in form `'apache22'` or `'ruby'` is referred to as *portname*
   * a string in form `'apache22-2.2.25'` or `'ruby-1.8.7.371,1'` is referred to
-    as a *pkgname* 
+    as a *pkgname*
   * a string in form `'www/apache22'` or `'lang/ruby18'` is referred to as a
-    port *origin* 
+    port *origin*
 
 See [http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html](http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html)
 
@@ -112,7 +112,7 @@ It's recommended to use *origins* or *pkgnames* to identify ports.
 
 Accepting *portnames* (e.g. `apache22`) as the [name](#name-required)
 parameter was introduced for convenience in 0.2.0. However, *portnames* in
-this form are ambiguous, meaning that port search may find multiple ports 
+this form are ambiguous, meaning that port search may find multiple ports
 matching the given *portname*. For example `'ruby'` package has three ports
 at the time of this writing  (2013-08-30): `ruby-1.8.7.371,1`,
 `ruby-1.9.3.448,1`, and `ruby-2.0.0.195_1,1` with origins `lang/ruby18`,
@@ -140,14 +140,14 @@ being `'on'/'off'` strings.
 
 ## Limitations
 
-These are limitation I see at the moment: 
+These are limitation I see at the moment:
 
   * tested manually on FreeBSD only - any feedback welcome from other OSes,
   * unit tests for provider are still missing,
   * only on/off options are currently supported, more knowledge about BSD ports
     is necessary (are there other option types?)
   * only options from option files (`/var/db/ports/*/options{,.local}`) are
-    taken into account when retrieving current resource state, 
+    taken into account when retrieving current resource state,
   * we no longer use public `make showconfig` interface to read option values
     (it was too slow); the options are retrieved from options files only; this
     may have some limitations now, and may cause some bugs in future - the

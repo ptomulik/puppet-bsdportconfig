@@ -1,33 +1,60 @@
 ---
+sudo: false
 language: ruby
-rvm:
-  - 1.8.7
-  - 1.9.3
-  - 2.0.0
-  - ruby-head
+before_install:
+  - gem --version
+  - gem update
+
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - libxslt-dev
+
+bundler_args: --path vendor
+
 script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
-branches:
-  only:
-    master
-env:
-  matrix:
-    - PUPPET_GEM_VERSION="~> 2.7.0"
-    - PUPPET_GEM_VERSION="~> 3.0.0"
-    - PUPPET_GEM_VERSION="~> 3.1.0"
-    - PUPPET_GEM_VERSION="~> 3.2.0"
 matrix:
   allow_failures:
-    - rvm: ruby-head
-  exclude:
+    # - rvm: ruby-head
+  include:
     - rvm: 1.8.7
       env: PUPPET_GEM_VERSION="~> 2.7.0"
+    - rvm: 1.8.7
+      env: PUPPET_GEM_VERSION="~> 3.8.0"
     - rvm: 1.9.3
-      env: PUPPET_GEM_VERSION="~> 2.7.0"
-    - rvm: 2.0.0
-      env: PUPPET_GEM_VERSION="~> 2.7.0"
-    - rvm: 2.0.0
       env: PUPPET_GEM_VERSION="~> 3.0.0"
+    - rvm: 1.9.3
+      env: PUPPET_GEM_VERSION="~> 4"
+    - rvm: 1.9.3
+      env: PUPPET_GEM_VERSION="~> 5"
     - rvm: 2.0.0
-      env: PUPPET_GEM_VERSION="~> 3.1.0"
-notifications:
-  email: false
+      env: PUPPET_GEM_VERSION="~> 3.2.0"
+    - rvm: 2.0.0
+      env: PUPPET_GEM_VERSION="~> 4"
+    - rvm: 2.0.0
+      env: PUPPET_GEM_VERSION="~> 5"
+    - rvm: 2.1
+      env: PUPPET_GEM_VERSION="~> 3.4.0"
+    - rvm: 2.1
+      env: PUPPET_GEM_VERSION="~> 4"
+    - rvm: 2.1
+      env: PUPPET_GEM_VERSION="~> 5"
+    - rvm: 2.2
+      env: PUPPET_GEM_VERSION="~> 4.0.0"
+    - rvm: 2.2
+      env: PUPPET_GEM_VERSION="~> 4"
+    - rvm: 2.2
+      env: PUPPET_GEM_VERSION="~> 5"
+    - rvm: 2.3
+      env: PUPPET_GEM_VERSION="~> 4.0.0"
+    - rvm: 2.3
+      env: PUPPET_GEM_VERSION="~> 4"
+    - rvm: 2.3
+      env: PUPPET_GEM_VERSION="~> 5"
+    - rvm: 2.4
+      env: PUPPET_GEM_VERSION="~> 4.8.0"
+    - rvm: 2.4
+      env: PUPPET_GEM_VERSION="~> 4"
+    - rvm: 2.4
+      env: PUPPET_GEM_VERSION="~> 5"
